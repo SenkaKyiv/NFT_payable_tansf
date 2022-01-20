@@ -4,19 +4,14 @@ pragma solidity ^0.8.0;
 
 contract ERC721 {
   mapping(address => uint256) _balances;
-  mapping(address => uint256) balance;
   mapping(uint256 => address) _belongsTo;
   mapping(uint256 => address) _allowedTo;
   mapping(address => mapping(address => bool)) _operableTo;
   uint256 public totalMinted;
   string public name;
   string public symbol;
-
-   
-   uint256 valueToSend = msg.value; 
    mapping (uint256=>string) private _uris;
   address creator =0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db;
-
 
  uint256 [] ids;
  
@@ -27,7 +22,6 @@ contract ERC721 {
   
 
    
-  
   constructor()  {
     name = "NFTwithpayable" ;
     symbol = "NFTP";
