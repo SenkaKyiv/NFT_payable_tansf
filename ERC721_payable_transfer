@@ -1,0 +1,147 @@
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+contract ERC721 {
+  mapping(address => uint256) _balances;
+  mapping(address => uint256) balance;
+  mapping(uint256 => address) _belongsTo;
+  mapping(uint256 => address) _allowedTo;
+  mapping(address => mapping(address => bool)) _operableTo;
+  uint256 public totalMinted;
+  string public name;
+  string public symbol;
+
+   
+   uint256 valueToSend = msg.value; 
+   mapping (uint256=>string) private _uris;
+  address creator =0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db;
+
+
+ uint256 [] ids;
+ 
+ modifier onlyCreate {
+      require( msg.sender ==  creator, 'no creator');
+      _;
+   }
+  
+
+   
+  
+  constructor()  {
+    name = "NFTwithpayable" ;
+    symbol = "NFTP";
+
+  }
+
+  
+  event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+
+ 
+  event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+
+  
+  event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+
+ 
+
+
+
+  function balanceOf(address _owner) external view returns (uint256) {
+    return _balances[_owner];
+  }
+
+  function ownerOf(uint256 _tokenId) public view returns (address owner) {
+    require(_tokenId < totalMinted, "unknown");
+    return _belongsTo[_tokenId];
+  }
+
+  function getApproved(uint256 _tokenId) public view returns (address operator) {
+    require(_tokenId < totalMinted, "unknown");
+    return _allowedTo[_tokenId];
+  }
+
+  function isApprovedForAll(address _owner, address _operator) public view returns (bool) {
+    return _operableTo[_owner][_operator];
+  }
+
+
+
+  function transfer(address _to, uint256 _tokenId) external payable {
+    require(msg.value == 1 ether, 'Only 1 ether allowed to be transfered.');
+   
+    _transfer(msg.sender, _to, _tokenId);
+   
+   
+      }
+
+
+  function transferFrom(address _from, address _to, uint256 _tokenId) external payable {
+    require(getApproved(_tokenId) == msg.sender || isApprovedForAll(_from, msg.sender), "!sender");
+    require(msg.value == 1 ether, 'Only 1 ether allowed to be transfered.');
+    _transfer(_from, _to, _tokenId);
+    
+    
+  }
+
+  function approve(address _to, uint256 _tokenId) external  {
+    require(ownerOf(_tokenId) == msg.sender, "!sender");
+    _approve(_to, _tokenId);
+  }
+
+  function setApprovalForAll(address _operator, bool _approved) external {
+    require(_operator != msg.sender, "!sender");
+
+    _operableTo[msg.sender][_operator] = _approved;
+    emit ApprovalForAll(msg.sender, _operator, _approved);
+  }
+
+  function mint(address _to, string memory _uri, uint id) external returns (uint256) {
+    require(_to != address(0), "!receiver");
+
+    _balances[_to]++;
+    _belongsTo[totalMinted] = _to;
+    totalMinted++;
+ _uris[id]=_uri;
+
+    emit Transfer(address(0), _to, totalMinted - 1);
+
+    return totalMinted - 1;
+  }
+
+ 
+function uri(uint256 id)  public view   returns (string memory) {
+        
+        return(_uris[id]);
+        }
+
+  function _transfer(address _from, address _to, uint256 _tokenId) internal {
+    require(ownerOf(_tokenId) == _from, "!sender");
+    require(_to != address(0), "!receiver");
+
+    _approve(address(0), _tokenId);
+
+    _balances[_to]++;
+    _balances[_from]--;
+    _belongsTo[_tokenId] = _to;
+
+    emit Transfer(_from, _to, _tokenId);
+  }
+
+
+
+  function _approve(address _to, uint256 _tokenId) internal {
+    _allowedTo[_tokenId] = _to;
+    emit Approval(msg.sender, _to, _tokenId);
+  }
+
+    function withdraw() public payable  onlyCreate{
+    (bool success, ) = payable(creator).call{value: address(this).balance}("");
+    require(success);
+  }
+
+  function getBalance() public view returns (uint) {
+        return address(this).balance;
+  }
+  
+}
