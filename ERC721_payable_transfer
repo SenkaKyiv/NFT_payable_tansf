@@ -12,7 +12,7 @@ contract ERC721 {
   string public symbol;
    mapping (uint256=>string) private _uris;
   address creator =0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db;
-
+  address manager;
  uint256 [] ids;
  
  modifier onlyCreate {
@@ -25,6 +25,7 @@ contract ERC721 {
   constructor()  {
     name = "NFTwithpayable" ;
     symbol = "NFTP";
+    manager = msg.sender;
 
   }
 
@@ -80,6 +81,7 @@ contract ERC721 {
 
   function approve(address _to, uint256 _tokenId) external  {
     require(ownerOf(_tokenId) == msg.sender, "!sender");
+    require(msg.sender == manager, "manager: caller is not the manager");
     _approve(_to, _tokenId);
   }
 
@@ -92,6 +94,7 @@ contract ERC721 {
 
   function mint(address _to, string memory _uri, uint id) external returns (uint256) {
     require(_to != address(0), "!receiver");
+    require(msg.sender == manager, "manager: caller is not the manager");
 
     _balances[_to]++;
     _belongsTo[totalMinted] = _to;
