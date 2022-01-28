@@ -55,28 +55,28 @@ contract NFT  is ERC721, IERC165, ERC721TokenReceiver {
   }
   
  
-  function balanceOf(address _owner) external view returns (uint256) {
+  function balanceOf(address _owner) override external view returns (uint256) {
     return _balances[_owner];
   }
-  function ownerOf(uint256 _tokenId) public view returns (address owner) {
+  function ownerOf(uint256 _tokenId) override public view returns (address owner) {
     require(_tokenId < totalMinted, "unknown");
     return _belongsTo[_tokenId];
   }
-  function getApproved(uint256 _tokenId) public view returns (address operator) {
+  function getApproved(uint256 _tokenId) override public view returns (address operator) {
     require(_tokenId < totalMinted, "unknown");
     return _allowedTo[_tokenId];
   }
-  function isApprovedForAll(address _owner, address _operator) public view returns (bool) {
+  function isApprovedForAll(address _owner, address _operator) override public view returns (bool) {
     return _operableTo[_owner][_operator];
   }
 
 
-  function approve(address _to, uint256 _tokenId) external  {
+  function approve(address _to, uint256 _tokenId) override external  {
     require(ownerOf(_tokenId) == msg.sender, "!sender");
     require(msg.sender == manager, "manager: caller is not the manager");
     _approve(_to, _tokenId);
   }
-  function setApprovalForAll(address _operator, bool _approved) external {
+  function setApprovalForAll(address _operator, bool _approved) override external {
     require(_operator != msg.sender, "!sender");
     _operableTo[msg.sender][_operator] = _approved;
     emit ApprovalForAll(msg.sender, _operator, _approved);
@@ -90,7 +90,7 @@ contract NFT  is ERC721, IERC165, ERC721TokenReceiver {
    
       }
 
-function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes memory _data)  external payable {
+function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes memory _data) override external payable {
      require(getApproved(_tokenId) == msg.sender || isApprovedForAll(_from, msg.sender), "!sender");
      require(msg.value == 1 ether, 'Only 1 ether allowed to be transfered.');
      _transfer(_from, _to, _tokenId);
@@ -104,13 +104,13 @@ if(size > 0){
 }
 
     }
-function safeTransferFrom(address _from, address _to, uint256 _tokenId) external payable{
+function safeTransferFrom(address _from, address _to, uint256 _tokenId) override external payable{
   
  require(msg.value == 1 ether, 'Only 1 ether allowed to be transfered.');
     _transfer(_from, _to, _tokenId);
 }
 
-  function transferFrom(address _from, address _to, uint256 _tokenId) external payable {
+  function transferFrom(address _from, address _to, uint256 _tokenId) override external payable {
     require(getApproved(_tokenId) == msg.sender || isApprovedForAll(_from, msg.sender), "!sender");
     require(msg.value == 1 ether, 'Only 1 ether allowed to be transfered.');
     _transfer(_from, _to, _tokenId);
@@ -153,14 +153,14 @@ function uri(uint256 id)  public view   returns (string memory) {
   function getBalance() public view returns (uint) {
         return address(this).balance;
   }
-function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes memory _data) external returns(bytes4){
+function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes memory _data) override external returns(bytes4){
         
     }
 function _registerInterface(bytes4 interfaceId) internal {
         require(interfaceId != 0xffffffff, "ERC165: invalid interface id");
         _supportedInterfaces[interfaceId] = true;
     }
-function supportsInterface(bytes4 interfaceId) external view returns (bool){
+function supportsInterface(bytes4 interfaceId) override external view returns (bool){
     return supportedInterfaces[interfaceId];
 }
 }
