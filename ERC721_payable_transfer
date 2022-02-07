@@ -34,7 +34,7 @@ contract NFT  is ERC721, IERC165, ERC721TokenReceiver {
    mapping (uint256=>string) private _uris;
 
    bytes4 private constant _INTERFACE_ID_ERC165 = 0x01ffc9a7;
-   mapping (bytes4 => bool) internal supportedInterfaces;
+   
   address creator =0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db;
   address manager;
  uint256 [] ids;
@@ -49,7 +49,7 @@ contract NFT  is ERC721, IERC165, ERC721TokenReceiver {
     name = "NFTwithpayable" ;
     symbol = "NFTP";
     manager = msg.sender;
-    //supportedInterfaces[this.supportsInterface.selector] = true;
+    
     _registerInterface(_INTERFACE_ID_ERC165);
   
   }
@@ -161,6 +161,6 @@ function _registerInterface(bytes4 interfaceId) internal {
         _supportedInterfaces[interfaceId] = true;
     }
 function supportsInterface(bytes4 interfaceId) override external view returns (bool){
-    return supportedInterfaces[interfaceId];
+    return _supportedInterfaces[interfaceId];
 }
 }
